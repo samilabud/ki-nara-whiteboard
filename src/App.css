@@ -5,7 +5,6 @@
   height: 100vh;
 }
 
-
 .whiteBoardContainer {
   /* min-height: 100vh; */
   display: flex;
@@ -22,20 +21,68 @@
   height: 80%;
 }
 
-.drawButtonsContainer{
+.drawButtonsContainer {
   display: flex;
-  background-color:aliceblue;
+  background-color: #d6ffff;
   flex-grow: calc(100);
 }
 
-.colorButtonsContainer{
+.colorButtonsContainer {
   display: flex;
-  background-color:aqua;
+  background-color: #f0f0e9;
   flex-grow: calc(100);
+  align-items: center;
+  padding-left: 10px;
 }
 
-.zoomButtonsContainer{
+.zoomButtonsContainer {
   display: flex;
-  background-color:bisque;
+  background-color: #d6ffff;
   flex-grow: calc(100);
+  padding-left: 10px;
+}
+
+/* Colors */
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 2px;
+  padding: 0;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 5px;
+  color: #333;
+  border: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button img {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+button img:hover {
+  background-color: "#eee";
+}
+
+button img.selected {
+  background-color: "#eee";
+}
+
+.colorButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 2px;
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  cursor: pointer;
 }

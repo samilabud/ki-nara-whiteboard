@@ -1,5 +1,5 @@
-import EraserIcon from './../images/buttons/eraser.svg';
-import PencilIcon from './../images/buttons/pencil.svg';
+import EraserIcon from "./../images/buttons/eraser.svg";
+import PencilIcon from "./../images/buttons/pencil.svg";
 
 export const cursors = {
   eraser: `url(${EraserIcon}) 0 30, auto`,

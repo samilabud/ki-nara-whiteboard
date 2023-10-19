@@ -1,21 +1,21 @@
-import { fabric } from 'fabric';
-import { getCursor } from './cursors';
+import { fabric } from "fabric";
+import { getCursor } from "./cursors";
 
 export const modes = {
-  PENCIL: 'PENCIL',
-  LINE: 'LINE',
-  RECTANGLE: 'RECTANGLE',
-  TRIANGLE: 'TRIANGLE',
-  ELLIPSE: 'ELLIPSE',
-  ERASER: 'ERASER',
-  SELECT: 'SELECT',
-  TEXT: 'TEXT',
+  PENCIL: "PENCIL",
+  LINE: "LINE",
+  RECTANGLE: "RECTANGLE",
+  TRIANGLE: "TRIANGLE",
+  ELLIPSE: "ELLIPSE",
+  ERASER: "ERASER",
+  SELECT: "SELECT",
+  TEXT: "TEXT",
 };
 
 export class Board {
   canvas;
   modes;
-  cursorPencil = getCursor('pencil');
+  cursorPencil = getCursor("pencil");
   mouseDown = false;
   drawInstance = null;
   drawingSettings;
@@ -35,7 +35,7 @@ export class Board {
     }
     this.canvas = this.initCanvas(this.canvasConfig);
 
-    this.canvas.once('after:render', () => {
+    this.canvas.once("after:render", () => {
       this.applyCanvasConfig(params.canvasConfig);
     });
 
@@ -60,16 +60,18 @@ export class Board {
       return object;
     };
 
-    const canvasElement = document.getElementById('canvas');
+    const canvasElement = document.getElementById("canvas");
     if (!canvasElement) return;
 
     const parentElement = canvasElement.parentNode;
 
-    const canvas = new fabric.Canvas('canvas');
+    const canvas = new fabric.Canvas("canvas");
     canvas.perPixelTargetFind = true;
 
     if (parentElement) {
-      this.element = this.handleResize(this.resizeCanvas(canvas, parentElement).bind(this));
+      this.element = this.handleResize(
+        this.resizeCanvas(canvas, parentElement).bind(this),
+      );
       this.element.observe(parentElement);
     }
     return canvas;
@@ -90,17 +92,16 @@ export class Board {
 
     this.saveCanvasState();
     this.canvas.requestRenderAll();
-    console.log(this.canvas.getObjects());
-    this.canvas.fire('config:change');
+    this.canvas.fire("config:change");
   }
 
   addZoomListeners() {
     const canvas = this.canvas;
     const that = this;
-    canvas.off('mouse:wheel');
-    canvas.off('touch:gesture');
+    canvas.off("mouse:wheel");
+    canvas.off("touch:gesture");
 
-    canvas.on('mouse:wheel', function (opt) {
+    canvas.on("mouse:wheel", function (opt) {
       opt.e.preventDefault();
       opt.e.stopPropagation();
       if (opt.e.ctrlKey) {
@@ -114,41 +115,11 @@ export class Board {
         vpt[4] -= e.deltaX;
         vpt[5] -= e.deltaY;
 
-        // const boundaries = that.getCanvasContentBoundaries();
-
-        // let scrolledX = vpt[4] + e.deltaX;
-        // let scrolledY = vpt[5] + e.deltaY;
-        // console.log('scrolled', scrolledX, scrolledY);
-        // console.log('boundaries', boundaries);
-
-        // const offset = 50;
-
-        // scrolledX =
-        //   scrolledX < -boundaries.maxX + offset
-        //     ? -boundaries.maxX + offset
-        //     : -scrolledX < boundaries.minX - canvas.width + offset
-        //     ? canvas.width - boundaries.minX - offset
-        //     : scrolledX;
-        // scrolledY =
-        //   scrolledY < -boundaries.maxY + offset
-        //     ? -boundaries.maxY + offset
-        //     : -scrolledY < boundaries.minY - canvas.height + offset
-        //     ? canvas.height - boundaries.minY - offset
-        //     : scrolledY;
-
-        // that.throttle(() => console.log('after', scrolledX, scrolledY));
-
-        // vpt[4] = scrolledX;
-        // vpt[5] = scrolledY;
-
-        // console.log(vpt);
-
         canvas.requestRenderAll();
       }
     });
 
-    canvas.on('touch:gesture', (event) => {
-      console.log('1 touch:gesture');
+    canvas.on("touch:gesture", (event) => {
       if (event.e.touches && event.e.touches.length === 2) {
         const point1 = {
           x: event.e.touches[0].clientX,
@@ -161,8 +132,7 @@ export class Board {
 
         let prevDistance = canvas.getPointerDistance(point1, point2);
 
-        canvas.on('touch:gesture', (event) => {
-          console.log('2 touch:gesture');
+        canvas.on("touch:gesture", (event) => {
           const newDistance = canvas.getPointerDistance(point1, point2);
           const zoom = newDistance / prevDistance;
 
@@ -234,8 +204,8 @@ export class Board {
     this.removeCanvasListener(canvas);
     canvas.selection = false;
     canvas.isDrawingMode = false;
-    canvas.defaultCursor = 'auto';
-    canvas.hoverCursor = 'auto';
+    canvas.defaultCursor = "auto";
+    canvas.hoverCursor = "auto";
     canvas.getObjects().map((item) => item.set({ selectable: false }));
 
     if (this.editedTextObject) {
@@ -262,21 +232,17 @@ export class Board {
       const width = whiteboard.clientWidth;
       const height = whiteboard.clientHeight;
       this.changeZoom({ scale: 1 });
-      // const scale = width / canvas.getWidth();
-      // const zoom = canvas.getZoom() * scale;
       canvas.setDimensions({ width: width, height: height });
-
       this.saveCanvasState();
-      // canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
     };
   }
 
   removeCanvasListener() {
     const canvas = this.canvas;
-    canvas.off('mouse:down');
-    canvas.off('mouse:move');
-    canvas.off('mouse:up');
-    canvas.off('mouse:over');
+    canvas.off("mouse:down");
+    canvas.off("mouse:move");
+    canvas.off("mouse:up");
+    canvas.off("mouse:over");
   }
 
   draw() {
@@ -287,15 +253,15 @@ export class Board {
     canvas.freeDrawingBrush.color = drawingSettings.currentColor;
     canvas.isDrawingMode = true;
     canvas.freeDrawingCursor = this.cursorPencil;
-    canvas.on('mouse:up', this.stopDrawing.bind(this));
+    canvas.on("mouse:up", this.stopDrawing.bind(this));
   }
 
   createLine() {
     const canvas = this.canvas;
 
-    canvas.on('mouse:down', this.startAddLine().bind(this));
-    canvas.on('mouse:move', this.startDrawingLine().bind(this));
-    canvas.on('mouse:up', this.stopDrawing.bind(this));
+    canvas.on("mouse:down", this.startAddLine().bind(this));
+    canvas.on("mouse:move", this.startDrawingLine().bind(this));
+    canvas.on("mouse:up", this.stopDrawing.bind(this));
 
     canvas.defaultCursor = this.cursorPencil;
     canvas.hoverCursor = this.cursorPencil;
@@ -309,11 +275,14 @@ export class Board {
       this.mouseDown = true;
 
       let pointer = canvas.getPointer(e);
-      this.drawInstance = new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
-        strokeWidth: drawingSettings.brushWidth,
-        stroke: drawingSettings.currentColor,
-        selectable: false,
-      });
+      this.drawInstance = new fabric.Line(
+        [pointer.x, pointer.y, pointer.x, pointer.y],
+        {
+          strokeWidth: drawingSettings.brushWidth,
+          stroke: drawingSettings.currentColor,
+          selectable: false,
+        },
+      );
 
       canvas.add(this.drawInstance);
       canvas.requestRenderAll();
@@ -339,9 +308,9 @@ export class Board {
     const canvas = this.canvas;
     canvas.isDrawingMode = true;
 
-    canvas.on('mouse:down', this.startAddRect().bind(this));
-    canvas.on('mouse:move', this.startDrawingRect().bind(this));
-    canvas.on('mouse:up', this.stopDrawing.bind(this));
+    canvas.on("mouse:down", this.startAddRect().bind(this));
+    canvas.on("mouse:move", this.startDrawingRect().bind(this));
+    canvas.on("mouse:up", this.stopDrawing.bind(this));
 
     canvas.selection = false;
     canvas.defaultCursor = this.cursorPencil;
@@ -364,7 +333,9 @@ export class Board {
       this.drawInstance = new fabric.Rect({
         stroke: drawingSettings.currentColor,
         strokeWidth: drawingSettings.brushWidth,
-        fill: drawingSettings.fill ? drawingSettings.currentColor : 'transparent',
+        fill: drawingSettings.fill
+          ? drawingSettings.currentColor
+          : "transparent",
         left: this.origX,
         top: this.origY,
         width: 0,
@@ -375,7 +346,7 @@ export class Board {
       canvas.add(this.drawInstance);
 
       this.drawInstance.on(
-        'mousedown',
+        "mousedown",
         function (e) {
           if (drawingSettings.currentMode === this.modes.ERASER) {
             canvas.remove(e.target);
@@ -392,10 +363,10 @@ export class Board {
         const pointer = canvas.getPointer(e);
 
         if (pointer.x < this.origX) {
-          this.drawInstance.set('left', pointer.x);
+          this.drawInstance.set("left", pointer.x);
         }
         if (pointer.y < this.origY) {
-          this.drawInstance.set('top', pointer.y);
+          this.drawInstance.set("top", pointer.y);
         }
         this.drawInstance.set({
           width: Math.abs(pointer.x - this.origX),
@@ -417,9 +388,9 @@ export class Board {
     const canvas = this.canvas;
     canvas.isDrawingMode = true;
 
-    canvas.on('mouse:down', this.startAddEllipse().bind(this));
-    canvas.on('mouse:move', this.startDrawingEllipse().bind(this));
-    canvas.on('mouse:up', this.stopDrawing.bind(this));
+    canvas.on("mouse:down", this.startAddEllipse().bind(this));
+    canvas.on("mouse:move", this.startDrawingEllipse().bind(this));
+    canvas.on("mouse:up", this.stopDrawing.bind(this));
 
     canvas.selection = false;
     canvas.defaultCursor = this.cursorPencil;
@@ -441,7 +412,9 @@ export class Board {
       this.drawInstance = new fabric.Ellipse({
         stroke: drawingSettings.currentColor,
         strokeWidth: drawingSettings.brushWidth,
-        fill: drawingSettings.fill ? drawingSettings.currentColor : 'transparent',
+        fill: drawingSettings.fill
+          ? drawingSettings.currentColor
+          : "transparent",
         left: this.origX,
         top: this.origY,
         cornerSize: 7,
@@ -460,10 +433,10 @@ export class Board {
       if (this.mouseDown) {
         const pointer = canvas.getPointer(e);
         if (pointer.x < this.origX) {
-          this.drawInstance.set('left', pointer.x);
+          this.drawInstance.set("left", pointer.x);
         }
         if (pointer.y < this.origY) {
-          this.drawInstance.set('top', pointer.y);
+          this.drawInstance.set("top", pointer.y);
         }
         this.drawInstance.set({
           rx: Math.abs(pointer.x - this.origX) / 2,
@@ -479,9 +452,9 @@ export class Board {
     const canvas = this.canvas;
     canvas.isDrawingMode = true;
 
-    canvas.on('mouse:down', this.startAddTriangle().bind(this));
-    canvas.on('mouse:move', this.startDrawingTriangle().bind(this));
-    canvas.on('mouse:up', this.stopDrawing.bind(this));
+    canvas.on("mouse:down", this.startAddTriangle().bind(this));
+    canvas.on("mouse:move", this.startDrawingTriangle().bind(this));
+    canvas.on("mouse:up", this.stopDrawing.bind(this));
 
     canvas.selection = false;
     canvas.defaultCursor = this.cursorPencil;
@@ -504,7 +477,9 @@ export class Board {
       this.drawInstance = new fabric.Triangle({
         stroke: drawingSettings.currentColor,
         strokeWidth: drawingSettings.brushWidth,
-        fill: drawingSettings.fill ? drawingSettings.currentColor : 'transparent',
+        fill: drawingSettings.fill
+          ? drawingSettings.currentColor
+          : "transparent",
         left: this.origX,
         top: this.origY,
         width: 0,
@@ -522,10 +497,10 @@ export class Board {
       if (this.mouseDown) {
         const pointer = canvas.getPointer(e);
         if (pointer.x < this.origX) {
-          this.drawInstance.set('left', pointer.x);
+          this.drawInstance.set("left", pointer.x);
         }
         if (pointer.y < this.origY) {
-          this.drawInstance.set('top', pointer.y);
+          this.drawInstance.set("top", pointer.y);
         }
         this.drawInstance.set({
           width: Math.abs(pointer.x - this.origX),
@@ -542,7 +517,7 @@ export class Board {
     const canvas = this.canvas;
     canvas.isDrawingMode = true;
 
-    canvas.on('mouse:down', (e) => this.addText.call(this, e));
+    canvas.on("mouse:down", (e) => this.addText.call(this, e));
 
     canvas.isDrawingMode = false;
 
@@ -556,7 +531,7 @@ export class Board {
     const pointer = canvas.getPointer(e);
     this.origX = pointer.x;
     this.origY = pointer.y;
-    const text = new fabric.Textbox('', {
+    const text = new fabric.Textbox("", {
       left: this.origX - 10,
       top: this.origY - 10,
       fontSize: drawingSettings.brushWidth * 3 + 10,
@@ -564,7 +539,7 @@ export class Board {
       editable: true,
       perPixelTargetFind: false,
       keysMap: {
-        13: 'exitEditing',
+        13: "exitEditing",
       },
     });
 
@@ -575,14 +550,14 @@ export class Board {
 
     this.editedTextObject = text;
 
-    canvas.off('mouse:down');
+    canvas.off("mouse:down");
     canvas.once(
-      'mouse:down',
+      "mouse:down",
       function (e1) {
         if (text.isEditing) {
           text.exitEditing();
           this.editedTextObject = null;
-          canvas.once('mouse:down', (e2) => {
+          canvas.once("mouse:down", (e2) => {
             this.addText.call(this, e2);
           });
         } else {
@@ -598,25 +573,26 @@ export class Board {
     const canvas = this.canvas;
     canvas.isDrawingMode = false;
 
-    canvas.on('mouse:down', (event) => {
-      if(event.target){
+    canvas.on("mouse:down", (event) => {
+      if (event.target) {
         canvas.remove(event.target);
-        canvas.remove(event.target);this.saveCanvasState();
-      }else{
-        canvas.on('mouse:move', (e) => {
-          if(e.target && e.target.opacity===0.2){
+        canvas.remove(event.target);
+        this.saveCanvasState();
+      } else {
+        canvas.on("mouse:move", (e) => {
+          if (e.target && e.target.opacity === 0.2) {
             canvas.remove(e.target);
-            this.saveCanvasState()
+            this.saveCanvasState();
           }
         });
       }
     });
 
-    canvas.on('mouse:up', () => {
-      canvas.off('mouse:move');
+    canvas.on("mouse:up", () => {
+      canvas.off("mouse:move");
     });
 
-    canvas.on('mouse:over', (event) => {
+    canvas.on("mouse:over", (event) => {
       const hoveredObject = event.target;
       if (hoveredObject) {
         hoveredObject.set({
@@ -626,7 +602,7 @@ export class Board {
       }
     });
 
-    canvas.on('mouse:out', (event) => {
+    canvas.on("mouse:out", (event) => {
       const hoveredObject = event.target;
       if (hoveredObject) {
         hoveredObject.set({
@@ -636,18 +612,18 @@ export class Board {
       }
     });
 
-    canvas.defaultCursor = getCursor('eraser');
-    canvas.hoverCursor = getCursor('eraser');
+    canvas.defaultCursor = getCursor("eraser");
+    canvas.hoverCursor = getCursor("eraser");
   }
 
   onSelectMode() {
     const canvas = this.canvas;
     const drawingSettings = this.drawingSettings;
-    drawingSettings.currentMode = '';
+    drawingSettings.currentMode = "";
     canvas.isDrawingMode = false;
 
     canvas.getObjects().map((item) => item.set({ selectable: true }));
-    canvas.hoverCursor = 'all-scroll';
+    canvas.hoverCursor = "all-scroll";
   }
 
   clearCanvas() {
@@ -673,7 +649,6 @@ export class Board {
 
     scale = this.canvas.getZoom() * scale;
     scale = scale < minZoom ? minZoom : scale > maxZoom ? maxZoom : scale;
-
     this.canvas.zoomToPoint(point, scale);
     this.onZoom({ point, scale });
   }
@@ -689,7 +664,7 @@ export class Board {
 
   onZoom(params) {
     this.addZoomListeners();
-    this.canvas.fire('zoom:change', params);
+    this.canvas.fire("zoom:change", params);
   }
 
   openPage(page) {
@@ -705,8 +680,8 @@ export class Board {
       canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
         top: center.top,
         left: center.left,
-        originX: 'center',
-        originY: 'center',
+        originX: "center",
+        originY: "center",
       });
 
       canvas.renderAll();
@@ -756,20 +731,25 @@ export class Board {
 
   undo() {
     if (this.currentState > 0) {
-        this.currentState--;
-        this.canvas.loadFromJSON(this.canvasState[this.currentState], this.canvas.renderAll.bind(this.canvas));
-        this.canvas.requestRenderAll();
+      this.currentState--;
+      this.canvas.loadFromJSON(
+        this.canvasState[this.currentState],
+        this.canvas.renderAll.bind(this.canvas),
+      );
+      this.canvas.requestRenderAll();
     }
   }
 
   redo() {
-      if (this.currentState < this.canvasState.length - 1) {
-          this.currentState++;
-          this.canvas.loadFromJSON(this.canvasState[this.currentState], this.canvas.renderAll.bind(this.canvas));
-          this.canvas.requestRenderAll();
-      }
+    if (this.currentState < this.canvasState.length - 1) {
+      this.currentState++;
+      this.canvas.loadFromJSON(
+        this.canvasState[this.currentState],
+        this.canvas.renderAll.bind(this.canvas),
+      );
+      this.canvas.requestRenderAll();
+    }
   }
-
 
   // function drawBackground(canvas) {
   //   const dotSize = 4; // Adjust the size of the dots as needed

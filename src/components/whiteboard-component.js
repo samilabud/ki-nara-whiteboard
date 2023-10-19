@@ -1,64 +1,59 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Board } from '../libraries/Board.Class';
+import React, { useRef, useEffect } from "react";
+import { Board } from "../libraries/Board.Class";
+import PropTypes from "prop-types";
+import { canvasConfig } from "../configs/init-canvas-config";
 
-  const initDrawingSettings = {
-    brushWidth: 5,
-    currentMode: 'PENCIL',
-    currentColor: '#000000',
-    fill: false,
-  };
+function addListeners(canvas, setZoom) {
+  canvas.on("after:render", (e) => {
+    // const data = getFullData(canvas);
+    // onCanvasRender(data, e, canvas);
+  });
 
-  const initSettings = {
-    zoom: 1,
-    contentJSON: null,
-  };
+  canvas.on("zoom:change", function (data) {
+    setZoom(data.scale);
+  });
 
+  canvas.on("object:added", (event) => {
+    // onObjectAdded(event.target.toJSON(), event, canvas);
+    // onCanvasChange(event.target.toJSON(), event, canvas);
+  });
 
-const Whiteboard = () => {
-    const [board, setBoard] = useState();
-    const [canvasDrawingSettings, setCanvasDrawingSettings] = useState({
-      ...initDrawingSettings,
-    });
-    const canvasConfig = initSettings;
-    const canvasRef = useRef(null);
-  
-    useEffect(() => {
-      setCanvasDrawingSettings({ ...canvasDrawingSettings });
-    }, []);
-  
-    useEffect(() => {
-      if (!board || !canvasConfig) return;
-      board.setCanvasConfig(canvasConfig);
-    }, [board, canvasConfig]);
-  
-    useEffect(() => {
-      if (board) {
-        return;
-      }
-  
+  canvas.on("object:removed", (event) => {
+    // onObjectRemoved(event.target.toJSON(), event, canvas);
+    // onCanvasChange(event.target.toJSON(), event, canvas);
+  });
+
+  canvas.on("object:modified", (event) => {
+    // onObjectModified(event.target.toJSON(), event, canvas);
+    // onCanvasChange(event.target.toJSON(), event, canvas);
+  });
+}
+
+const Whiteboard = ({ board, setBoard, setZoom, canvasDrawingSettings }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (board) {
+      return;
+    }
+    const implementBoard = () => {
       const newBoard = new Board({
         drawingSettings: canvasDrawingSettings,
         canvasConfig: canvasConfig,
       });
-  
-      setBoard(newBoard);
-  
-      return () => {
-        if (board) {
-          board.removeBoard();
-        }
-      };
-    }, [board,canvasConfig, canvasDrawingSettings]);
-  
-    useEffect(() => {
-      if (!board || !canvasDrawingSettings) return;
-  
-      board.setDrawingSettings(canvasDrawingSettings);
-    }, [canvasDrawingSettings, board]);
 
-    return (
-        <canvas ref={canvasRef} id="canvas" />
-    );
-  };
-  
-  export default Whiteboard;
+      setZoom(canvasConfig.zoom);
+      setBoard(newBoard);
+      addListeners(newBoard.canvas, setZoom);
+    };
+    return () => implementBoard();
+  }, []);
+
+  return <canvas ref={canvasRef} id="canvas" />;
+};
+
+Whiteboard.propTypes = {
+  aspectRatio: PropTypes.number,
+};
+
+export default Whiteboard;
