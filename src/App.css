@@ -86,3 +86,9 @@ button img.selected {
   outline: none;
   cursor: pointer;
 }
+
+.separator {
+  margin: 0 4px;
+  width: 1px;
+  background: #cbcbcb;
+}
