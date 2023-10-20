@@ -1,3 +1,4 @@
+import { saveAs } from 'file-saver';
 import SelectIcon from "./../images/buttons/cross.svg";
 import EraserIcon from "./../images/buttons/eraser.svg";
 import TextIcon from "./../images/buttons/text.svg";
@@ -7,23 +8,38 @@ import EllipseIcon from "./../images/buttons/ellipse.svg";
 import TriangleIcon from "./../images/buttons/triangle.svg";
 import PencilIcon from "./../images/buttons/pencil.svg";
 import DeleteIcon from "./../images/buttons/delete.svg";
-// import DownloadIcon from './../images/buttons/download.svg';
+import DownloadIcon from './../images/buttons/download.svg';
 // import UploadIcon from './../images/buttons/add-photo.svg';
 // import FillIcon from './../images/buttons/color-fill.svg';
 import UndoIcon from "./../images/buttons/undo.svg";
 import RedoIcon from "./../images/buttons/redo.svg";
 import { modes } from "../libraries/Board.Class";
 
+const fileReaderInfo = {
+    file: { name: 'whiteboard' },
+    totalPages: 1,
+    currentPageNumber: 0,
+    currentPage: '',
+  };
+
 const DrawButtons = ({
   board,
   canvasDrawingSettings,
   setCanvasDrawingSettings,
-}) => {
+  canvasRef,
+}) => { 
+
   const changeMode = (mode, e) => {
     if (canvasDrawingSettings.currentMode === mode) return;
     const newOptions = { ...canvasDrawingSettings, currentMode: mode };
     setCanvasDrawingSettings(newOptions);
   };
+
+  const handleSaveCanvasAsImage = () => {
+    canvasRef.current.toBlob(function (blob) {
+      saveAs(blob, `${fileReaderInfo.file.name}${fileReaderInfo.currentPage ? '_page-' : ''}.png`);
+    });
+  }
 
   const getControls = () => {
     const modeButtons = {
@@ -64,6 +80,10 @@ const DrawButtons = ({
       </button>
       <button type="button" onClick={() => board.redo()}>
         <img src={RedoIcon} alt="Redo" />
+      </button>
+
+      <button onClick={()=>handleSaveCanvasAsImage(canvasRef)}>
+        <img src={DownloadIcon} alt="Download" />
       </button>
     </>
   );

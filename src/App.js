@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Whiteboard from "./components/whiteboard-component";
 import ZoomBar from "./components/zoombar-component";
 import DrawButtons from "./components/drawbuttons-component";
@@ -7,6 +7,7 @@ import { initDrawingSettings } from "./configs/init-canvas-config";
 import "./App.css";
 
 function App() {
+  const canvasRef = useRef(null);
   const [board, setBoard] = useState();
   const [zoom, setZoom] = useState();
   const [canvasDrawingSettings, setCanvasDrawingSettings] =
@@ -26,6 +27,7 @@ function App() {
       <header className="whiteBoardContainer">
         <div className="canvasContainer">
           <Whiteboard
+            canvasRef={canvasRef}
             board={board}
             setBoard={setBoard}
             setZoom={setZoom}
@@ -35,6 +37,7 @@ function App() {
       </header>
       <section className="drawButtonsContainer">
         <DrawButtons
+          canvasRef={canvasRef}
           board={board}
           canvasDrawingSettings={canvasDrawingSettings}
           setCanvasDrawingSettings={setCanvasDrawingSettings}

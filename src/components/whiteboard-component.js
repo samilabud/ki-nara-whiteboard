@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Board } from "../libraries/Board.Class";
 import PropTypes from "prop-types";
 import { canvasConfig } from "../configs/init-canvas-config";
@@ -29,9 +29,13 @@ function addListeners(canvas, setZoom) {
   });
 }
 
-const Whiteboard = ({ board, setBoard, setZoom, canvasDrawingSettings }) => {
-  const canvasRef = useRef(null);
-
+const Whiteboard = ({
+  canvasRef,
+  board,
+  setBoard,
+  setZoom,
+  canvasDrawingSettings,
+}) => {
   useEffect(() => {
     if (board) {
       return;
