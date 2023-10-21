@@ -1,3 +1,5 @@
+import { RangeInputS } from "./styles/thicker-styles";
+
 function _extends() {
   _extends = Object.assign
     ? Object.assign.bind()
@@ -14,6 +16,7 @@ function _extends() {
       };
   return _extends.apply(this, arguments);
 }
+
 function changeCurrentColor(
   board,
   canvasDrawingSettings,
@@ -56,4 +59,40 @@ const ColorButtons = ({
     </div>
   ));
 };
+
+const changeBrushWidth = (
+  e,
+  board,
+  canvasDrawingSettings,
+  setCanvasDrawingSettings,
+) => {
+  const intValue = parseInt(e.target.value);
+  board.canvas.freeDrawingBrush.width = intValue;
+  const newOptions = { ...canvasDrawingSettings, brushWidth: intValue };
+  setCanvasDrawingSettings(newOptions);
+};
+
+export const ColorThicker = ({
+  board,
+  canvasDrawingSettings,
+  setCanvasDrawingSettings,
+}) => (
+  <RangeInputS
+    type="range"
+    min={1}
+    max={30}
+    step={1}
+    thumbcolor={canvasDrawingSettings.currentColor}
+    value={canvasDrawingSettings.brushWidth}
+    onChange={(event) =>
+      changeBrushWidth(
+        event,
+        board,
+        canvasDrawingSettings,
+        setCanvasDrawingSettings,
+      )
+    }
+  />
+);
+
 export default ColorButtons;

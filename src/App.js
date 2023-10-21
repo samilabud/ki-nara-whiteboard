@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Whiteboard from "./components/whiteboard-component";
 import ZoomBar from "./components/zoombar-component";
 import DrawButtons from "./components/drawbuttons-component";
-import ColorButtons from "./components/colorbuttons-component";
+import ColorButtons, {
+  ColorThicker,
+} from "./components/colorbuttons-component";
 import { initDrawingSettings } from "./configs/init-canvas-config";
 import "./App.css";
 
@@ -45,6 +47,11 @@ function App() {
       </section>
       <section className="colorButtonsContainer">
         <ColorButtons
+          board={board}
+          canvasDrawingSettings={canvasDrawingSettings}
+          setCanvasDrawingSettings={setCanvasDrawingSettings}
+        />
+        <ColorThicker
           board={board}
           canvasDrawingSettings={canvasDrawingSettings}
           setCanvasDrawingSettings={setCanvasDrawingSettings}

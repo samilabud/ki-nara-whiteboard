@@ -61,7 +61,7 @@ const DrawButtons = ({
     });
 
     reader.readAsDataURL(file);
-  }
+  };
 
   const onFileChange = (event, board) => {
     if (!event.target.files[0]) return;
@@ -71,12 +71,12 @@ const DrawButtons = ({
     } else if (event.target.files[0].type.includes("pdf")) {
       board.clearCanvas();
     }
-  }
+  };
 
   const bringControlTOStartPosition = (board) => {
-    board.canvas.viewportTransform=[1, 0, 0, 1, 0, 0];
+    board.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
     board.resetZoom(1);
-  }
+  };
 
   const getControls = () => {
     const modeButtons = {
@@ -134,7 +134,7 @@ const DrawButtons = ({
         <img src={DownloadIcon} alt="Download" />
       </button>
 
-      <button onClick={()=>bringControlTOStartPosition(board)}>
+      <button onClick={() => bringControlTOStartPosition(board)}>
         Move to initial location
       </button>
     </>
