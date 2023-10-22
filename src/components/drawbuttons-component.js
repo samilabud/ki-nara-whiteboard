@@ -57,9 +57,9 @@ const DrawButtons = ({
       fabric.Image.fromURL(reader.result, (img) => {
         img.scaleToHeight(board.canvas.height);
         board.canvas.add(img);
+        board.saveCanvasState();
       });
     });
-
     reader.readAsDataURL(file);
   };
 
@@ -71,6 +71,7 @@ const DrawButtons = ({
     } else if (event.target.files[0].type.includes("pdf")) {
       board.clearCanvas();
     }
+    board.saveCanvasState();
   };
 
   const bringControlTOStartPosition = (board) => {

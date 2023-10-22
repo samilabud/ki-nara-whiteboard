@@ -22,7 +22,6 @@ export const RangeInputS = styled.input`
     align-items: center;
     border-radius: 5px;
     border: 1px solid #555;
-    // box-shadow: 0 1px 4px rgb(0 0 0 / 0.5);
   }
   &::-webkit-slider-thumb {
     box-shadow: 0px 1px 4px rgb(0 0 0 / 0.5);

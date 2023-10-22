@@ -3,14 +3,15 @@ import { Board } from "../libraries/Board.Class";
 import PropTypes from "prop-types";
 import { canvasConfig } from "../configs/init-canvas-config";
 
-function addListeners(canvas, setZoom) {
+function addListeners(canvas, setZoom, board) {
   canvas.on("after:render", (e) => {});
 
   canvas.on("zoom:change", function (data) {
     setZoom(data.scale);
   });
 
-  canvas.on("object:added", (event) => {});
+  canvas.on("object:added", (event) => {
+  });
 
   canvas.on("object:removed", (event) => {});
 
@@ -36,7 +37,7 @@ const Whiteboard = ({
 
       setZoom(canvasConfig.zoom);
       setBoard(newBoard);
-      addListeners(newBoard.canvas, setZoom);
+      addListeners(newBoard.canvas, setZoom, newBoard);
     };
     return () => implementBoard();
   }, []);
