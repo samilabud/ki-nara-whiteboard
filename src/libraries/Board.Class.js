@@ -10,12 +10,14 @@ export const modes = {
   ERASER: "ERASER",
   SELECT: "SELECT",
   TEXT: "TEXT",
+  DRAG: "DRAG",
 };
 
 export class Board {
   canvas;
   modes;
   cursorPencil = getCursor("pencil");
+  cursorDrag = getCursor("drag");
   mouseDown = false;
   drawInstance = null;
   drawingSettings;
@@ -70,7 +72,7 @@ export class Board {
 
     if (parentElement) {
       this.element = this.handleResize(
-        this.resizeCanvas(canvas, parentElement).bind(this),
+        this.resizeCanvas(canvas, parentElement).bind(this)
       );
       this.element.observe(parentElement);
     }
@@ -193,6 +195,9 @@ export class Board {
       case this.modes.TEXT:
         this.createText();
         break;
+      case this.modes.DRAG:
+        this.dragOn();
+        break;
       default:
         this.draw();
     }
@@ -281,7 +286,7 @@ export class Board {
           strokeWidth: drawingSettings.brushWidth,
           stroke: drawingSettings.currentColor,
           selectable: false,
-        },
+        }
       );
 
       canvas.add(this.drawInstance);
@@ -351,7 +356,7 @@ export class Board {
           if (drawingSettings.currentMode === this.modes.ERASER) {
             canvas.remove(e.target);
           }
-        }.bind(this),
+        }.bind(this)
       );
     };
   }
@@ -563,7 +568,7 @@ export class Board {
         } else {
           this.addText.call(this, e1);
         }
-      }.bind(this),
+      }.bind(this)
     );
 
     this.saveCanvasState();
@@ -614,6 +619,45 @@ export class Board {
 
     canvas.defaultCursor = getCursor("eraser");
     canvas.hoverCursor = getCursor("eraser");
+  }
+
+  dragOn() {
+    const canvas = this.canvas;
+    canvas.off("mouse:down");
+    canvas.off("mouse:move");
+    canvas.off("mouse:up");
+    const drawingSettings = this.drawingSettings;
+    drawingSettings.currentMode = "DRAG";
+    canvas.isDrawingMode = false;
+
+    canvas.on("mouse:down", function (opt) {
+      var evt = opt.e;
+      this.isDragging = true;
+      this.selection = false;
+      this.lastPosX = evt.clientX;
+      this.lastPosY = evt.clientY;
+    });
+    canvas.on("mouse:move", function (opt) {
+      if (this.isDragging) {
+        var e = opt.e;
+        var vpt = this.viewportTransform;
+        vpt[4] += e.clientX - this.lastPosX;
+        vpt[5] += e.clientY - this.lastPosY;
+        this.requestRenderAll();
+        this.lastPosX = e.clientX;
+        this.lastPosY = e.clientY;
+      }
+    });
+    canvas.on("mouse:up", function (opt) {
+      // on mouse up we want to recalculate new interaction
+      // for all objects, so we call setViewportTransform
+      this.setViewportTransform(this.viewportTransform);
+      this.isDragging = false;
+      this.selection = true;
+    });
+
+    canvas.defaultCursor = this.cursorDrag;
+    canvas.hoverCursor = this.cursorDrag;
   }
 
   onSelectMode() {
@@ -734,7 +778,7 @@ export class Board {
       this.currentState--;
       this.canvas.loadFromJSON(
         this.canvasState[this.currentState],
-        this.canvas.renderAll.bind(this.canvas),
+        this.canvas.renderAll.bind(this.canvas)
       );
       this.canvas.requestRenderAll();
     }
@@ -745,7 +789,7 @@ export class Board {
       this.currentState++;
       this.canvas.loadFromJSON(
         this.canvasState[this.currentState],
-        this.canvas.renderAll.bind(this.canvas),
+        this.canvas.renderAll.bind(this.canvas)
       );
       this.canvas.requestRenderAll();
     }

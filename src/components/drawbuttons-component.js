@@ -15,6 +15,7 @@ import UploadIcon from "./../images/buttons/add-photo.svg";
 // import FillIcon from './../images/buttons/color-fill.svg';
 import UndoIcon from "./../images/buttons/undo.svg";
 import RedoIcon from "./../images/buttons/redo.svg";
+import dragIcon from "./../images/buttons/drag.svg";
 import { modes } from "../libraries/Board.Class";
 
 const fileReaderInfo = {
@@ -44,7 +45,7 @@ const DrawButtons = ({
         blob,
         `${fileReaderInfo.file.name}${
           fileReaderInfo.currentPage ? "_page-" : ""
-        }.png`,
+        }.png`
       );
     });
   };
@@ -89,6 +90,7 @@ const DrawButtons = ({
       [modes.TEXT]: { icon: TextIcon, name: "Text" },
       [modes.SELECT]: { icon: SelectIcon, name: "Select" },
       [modes.ERASER]: { icon: EraserIcon, name: "Eraser" },
+      [modes.DRAG]: { icon: dragIcon, name: "Drag" },
     };
 
     return Object.keys(modeButtons).map((buttonKey) => {

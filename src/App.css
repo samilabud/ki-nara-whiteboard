@@ -92,3 +92,7 @@ button img.selected {
   width: 1px;
   background: #cbcbcb;
 }
+
+.selected {
+  background-color: #B3F0FF;
+}
